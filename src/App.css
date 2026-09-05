@@ -1,0 +1,8 @@
+.app {
+  min-height: 100vh;
+  max-width: var(--page-max-width);
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+}

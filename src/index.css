@@ -11,7 +11,7 @@
   /* Taille du titre */
   --font-size-title: 2rem;
 
-  
+
   /* Espace général entre les grandes parties */
   --space-section: 1.5rem;
 
@@ -56,4 +56,55 @@
   
   /*Largeur maximale de la page*/
    --page-max-width: 42rem;
+
+
+   /*--------- composent header -----------*/
+
+   /* Couleur du fond du header */
+    --color-header-background: #111a2e;
+
+   /* Bordure sous le header */
+    --color-header-border: #24304d;
+
+   /* Couleur du bouton Aide */
+    --color-accent: #5b5bd6;
+
+   /* Couleur du bouton au survol */
+    --color-accent-hover: #7474e8;
+
+    /* Espace intérieur du header */
+    --space-header: 1rem;
+
+    /* Hauteur minimale du header */
+    --header-height: 4rem;
+
+    /* Taille du titre */
+    --font-size-title: 1.75rem;
+
+    
+
+   
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
 }
