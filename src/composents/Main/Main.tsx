@@ -37,13 +37,20 @@ const Main = () => {
     [...emptyAttempt],
   ]);
 
-  const [keyStates, setKeyStates] = useState<
-    Record<string, LetterState>
-  >({});
+  const [keyStates, setKeyStates] = useState<Record<string, LetterState>>(
+    {}
+  );
 
   const [wordToFind, setWordToFind] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
+
+  // "playing" = le joueur peut jouer
+  // "won" = gagné
+  // "lost" = perdu
+  const [gameStatus, setGameStatus] = useState<"playing" | "won" | "lost">(
+    "playing"
+  );
 
   useEffect(() => {
     const getWord = async () => {
@@ -86,7 +93,7 @@ const Main = () => {
     const states: LetterState[] = ["", "", "", "", ""];
     const remainingLetters = wordToFind.split("");
 
-    // 1. Les lettres correctes : même lettre, même position.
+    // Les lettres bien placées : vert
     attempt.forEach((letter, index) => {
       if (letter === wordToFind[index]) {
         states[index] = "correct";
@@ -94,7 +101,7 @@ const Main = () => {
       }
     });
 
-    // 2. Les lettres présentes et absentes.
+    // Les lettres présentes : jaune, sinon gris
     attempt.forEach((letter, index) => {
       if (states[index] === "correct") {
         return;
@@ -124,18 +131,11 @@ const Main = () => {
         const newState = states[index];
         const oldState = nextKeyStates[letter];
 
-        // Vert est la couleur la plus importante.
         if (newState === "correct") {
           nextKeyStates[letter] = "correct";
-        } else if (
-          newState === "present" &&
-          oldState !== "correct"
-        ) {
+        } else if (newState === "present" && oldState !== "correct") {
           nextKeyStates[letter] = "present";
-        } else if (
-          newState === "absent" &&
-          oldState === undefined
-        ) {
+        } else if (newState === "absent" && oldState === undefined) {
           nextKeyStates[letter] = "absent";
         }
       });
@@ -148,6 +148,7 @@ const Main = () => {
     const currentAttempt = attempts[currentRow];
     const currentWord = currentAttempt.join("");
 
+    // On refuse une ligne incomplète
     if (currentWord.length < 5) {
       showMessage("Le mot doit contenir 5 lettres.");
       return;
@@ -163,17 +164,22 @@ const Main = () => {
 
     updateKeyboardStates(currentAttempt, currentStates);
 
+    // Victoire
     if (currentWord === wordToFind) {
+      setGameStatus("won");
       showMessage("Bravo, vous avez trouvé le mot !");
       return;
     }
 
+    // Défaite : sixième ligne, donc index 5
     if (currentRow === 5) {
-      showMessage(`La partie est terminée. Le mot était ${wordToFind}.`);
+      setGameStatus("lost");
+      showMessage(`Partie terminée. Le mot était ${wordToFind}.`);
       return;
     }
 
-    setCurrentRow((previousRow) => previousRow + 1);
+    // On passe à la ligne suivante
+    setCurrentRow(currentRow + 1);
   };
 
   const handleDelete = () => {
@@ -197,6 +203,11 @@ const Main = () => {
   };
 
   const handleKeyClick = (letter: string) => {
+    // Après victoire ou défaite, les touches ne font plus rien
+    if (gameStatus !== "playing") {
+      return;
+    }
+
     if (letter === "ENTRER") {
       handleEnter();
       return;
@@ -210,6 +221,7 @@ const Main = () => {
     const currentAttempt = attempts[currentRow];
     const emptyIndex = currentAttempt.indexOf("");
 
+    // La ligne contient déjà 5 lettres
     if (emptyIndex === -1) {
       return;
     }
@@ -240,10 +252,7 @@ const Main = () => {
       {message ? <Message text={message} /> : null}
 
       <Section className={mainStyles.sectionGrid}>
-        <Grid
-          attempts={attempts}
-          letterStates={letterStates}
-        />
+        <Grid attempts={attempts} letterStates={letterStates} />
       </Section>
 
       <Section className={mainStyles.sectionKeyboard}>
