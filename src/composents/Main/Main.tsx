@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Section from "../Section/Section";
 import Grid from "../Grid/Grid";
-import KeyBoard from "../Keyboard/Keyboard";
+import KeyBoard from "../KeyBoard/KeyBoard";
 import Message from "../Message/Message";
 import mainStyles from "./Main.module.css";
 
@@ -15,6 +15,7 @@ interface WordResponse {
 }
 
 const emptyAttempt: Attempt = ["", "", "", "", ""];
+const emptyStates: LetterState[] = ["", "", "", "", ""];
 
 const Main = () => {
   const [attempts, setAttempts] = useState<Attempt[]>([
@@ -29,12 +30,12 @@ const Main = () => {
   const [currentRow, setCurrentRow] = useState(0);
 
   const [letterStates, setLetterStates] = useState<LetterState[][]>([
-    [...emptyAttempt],
-    [...emptyAttempt],
-    [...emptyAttempt],
-    [...emptyAttempt],
-    [...emptyAttempt],
-    [...emptyAttempt],
+    [...emptyStates],
+    [...emptyStates],
+    [...emptyStates],
+    [...emptyStates],
+    [...emptyStates],
+    [...emptyStates],
   ]);
 
   const [keyStates, setKeyStates] = useState<Record<string, LetterState>>(
@@ -45,9 +46,6 @@ const Main = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
 
-  // "playing" = le joueur peut jouer
-  // "won" = gagné
-  // "lost" = perdu
   const [gameStatus, setGameStatus] = useState<"playing" | "won" | "lost">(
     "playing"
   );
@@ -93,7 +91,6 @@ const Main = () => {
     const states: LetterState[] = ["", "", "", "", ""];
     const remainingLetters = wordToFind.split("");
 
-    // Les lettres bien placées : vert
     attempt.forEach((letter, index) => {
       if (letter === wordToFind[index]) {
         states[index] = "correct";
@@ -101,7 +98,6 @@ const Main = () => {
       }
     });
 
-    // Les lettres présentes : jaune, sinon gris
     attempt.forEach((letter, index) => {
       if (states[index] === "correct") {
         return;
@@ -148,7 +144,6 @@ const Main = () => {
     const currentAttempt = attempts[currentRow];
     const currentWord = currentAttempt.join("");
 
-    // On refuse une ligne incomplète
     if (currentWord.length < 5) {
       showMessage("Le mot doit contenir 5 lettres.");
       return;
@@ -164,21 +159,18 @@ const Main = () => {
 
     updateKeyboardStates(currentAttempt, currentStates);
 
-    // Victoire
     if (currentWord === wordToFind) {
       setGameStatus("won");
       showMessage("Bravo, vous avez trouvé le mot !");
       return;
     }
 
-    // Défaite : sixième ligne, donc index 5
     if (currentRow === 5) {
       setGameStatus("lost");
       showMessage(`Partie terminée. Le mot était ${wordToFind}.`);
       return;
     }
 
-    // On passe à la ligne suivante
     setCurrentRow(currentRow + 1);
   };
 
@@ -203,7 +195,6 @@ const Main = () => {
   };
 
   const handleKeyClick = (letter: string) => {
-    // Après victoire ou défaite, les touches ne font plus rien
     if (gameStatus !== "playing") {
       return;
     }
@@ -221,7 +212,6 @@ const Main = () => {
     const currentAttempt = attempts[currentRow];
     const emptyIndex = currentAttempt.indexOf("");
 
-    // La ligne contient déjà 5 lettres
     if (emptyIndex === -1) {
       return;
     }
