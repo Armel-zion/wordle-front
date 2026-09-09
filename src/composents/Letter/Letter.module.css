@@ -1,0 +1,35 @@
+.letter {
+  display: grid;
+  place-items: center;
+
+  width: var(--cell-size);
+  aspect-ratio: 1;
+
+  color: var(--color-text);
+  background-color: var(--color-cell-empty);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-medium);
+
+  font-size: var(--font-size-letter);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+
+.correct {
+  background-color: #538d4e;
+  border-color: #538d4e;
+  color: white;
+}
+
+.present {
+  background-color: #b59f3b;
+  border-color: #b59f3b;
+  color: white;
+}
+
+.absent {
+  background-color: #3a3a3c;
+  border-color: #3a3a3c;
+  color: white;
+}

@@ -1,0 +1,45 @@
+.headerWordle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  min-height: var(--header-height);
+  padding: var(--space-header);
+
+  background-color: var(--color-header-background);
+  border-bottom: 1px solid var(--color-header-border);
+}
+
+.headerWordle h1 {
+  margin: 0;
+  font-size: var(--font-size-title);
+  color: var(--color-text);
+}
+
+.buttonAide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+
+  color: var(--color-text);
+  background-color: var(--color-accent);
+  border: 0;
+  border-radius: var(--radius-medium);
+
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.buttonAide:hover {
+  background-color: var(--color-accent-hover);
+  transform: translateY(-2px);
+}
+
+.buttonAide:focus-visible {
+  outline: 3px solid var(--color-text);
+  outline-offset: 3px;
+}

@@ -1,0 +1,81 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 1rem;
+  background-color: rgb(0 0 0 / 70%);
+}
+
+.modal {
+  position: relative;
+
+  width: min(100%, 32rem);
+  padding: 2rem;
+
+  color: var(--color-text);
+  background-color: var(--color-header-background);
+  border: 1px solid var(--color-header-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 40%);
+}
+
+.modal h2 {
+  margin-top: 0;
+}
+
+.modal p,
+.modal li {
+  line-height: 1.5;
+}
+
+.closeButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+
+  display: grid;
+  place-items: center;
+
+  width: 2.25rem;
+  height: 2.25rem;
+
+  color: var(--color-text);
+  background: transparent;
+  border: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.startButton {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+
+  color: var(--color-text);
+  background-color: var(--color-accent);
+  border: 0;
+  border-radius: 0.5rem;
+
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.startButton:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.closeButton:focus-visible,
+.startButton:focus-visible {
+  outline: 3px solid var(--color-text);
+  outline-offset: 3px;
+}
