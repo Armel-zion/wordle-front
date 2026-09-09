@@ -8,14 +8,8 @@
   /* Couleur du texte secondaire */
   --color-text-muted: #aab4cc;
 
-  /* Taille du titre */
-  --font-size-title: 2rem;
-
-
   /* Espace général entre les grandes parties */
   --space-section: 1.5rem;
-
-
 
   /* Couleur d’une case vide */
   --color-cell-empty: #161e33;
@@ -38,52 +32,35 @@
   /* Couleur d’une touche désactivée */
   --color-key-disabled: #334155;
 
-  /* Taille d’une case*/
-   --cell-size: 3.5rem;
-  
+  /* Taille d’une case */
+  --cell-size: 3.5rem;
+
   /* Espace entre les cases */
   --space-cell: 0.5rem;
 
-  /*Espace entre les lignes*/
+  /* Espace entre les lignes */
   --space-row: 0.5rem;
 
-
-  /*Rayon des coins arrondis*/
+  /* Rayon des coins */
   --radius-medium: 0.5rem;
 
-  /*Taille du texte*/
-  --font-size-letter: 1.5rem;
-  
-  /*Largeur maximale de la page*/
-   --page-max-width: 42rem;
+  /* Taille des lettres dans une case */
+  --font-size-letter: 2rem;
 
+  /* Largeur maximale de la page */
+  --page-max-width: 42rem;
 
-   /*--------- composent header -----------*/
+  /* Header */
+  --color-header-background: #111a2e;
+  --color-header-border: #24304d;
+  --color-accent: #5b5bd6;
+  --color-accent-hover: #7474e8;
+  --space-header: 1rem;
+  --header-height: 4rem;
+  --font-size-title: 1.75rem;
 
-   /* Couleur du fond du header */
-    --color-header-background: #111a2e;
-
-   /* Bordure sous le header */
-    --color-header-border: #24304d;
-
-   /* Couleur du bouton Aide */
-    --color-accent: #5b5bd6;
-
-   /* Couleur du bouton au survol */
-    --color-accent-hover: #7474e8;
-
-    /* Espace intérieur du header */
-    --space-header: 1rem;
-
-    /* Hauteur minimale du header */
-    --header-height: 4rem;
-
-    /* Taille du titre */
-    --font-size-title: 1.75rem;
-
-    
-
-   
+  /* Message d'erreur */
+  --color-error: #b91c1c;
 }
 
 *,
@@ -92,19 +69,15 @@
   box-sizing: border-box;
 }
 
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-
-  background-color: var(--color-background);
-  color: var(--color-text);
-}
-
 html,
 body,
 #root {
   min-height: 100%;
   margin: 0;
+}
+
+body {
+  min-width: 320px;
+  background-color: var(--color-background);
+  color: var(--color-text);
 }

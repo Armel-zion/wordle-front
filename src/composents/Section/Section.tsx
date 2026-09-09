@@ -1,11 +1,12 @@
+import type { ComponentProps } from "react";
 import sectionStyles from "./Section.module.css";
 
-type SectionProps = React.ComponentProps<"section">;
+type SectionProps = ComponentProps<"section">;
 
-const Section = ({ children, ...props }: SectionProps) => {
+const Section = ({ children, className = "", ...props }: SectionProps) => {
   return (
     <section
-      className={sectionStyles.section}
+      className={`${sectionStyles.section} ${className}`}
       {...props}
     >
       {children}

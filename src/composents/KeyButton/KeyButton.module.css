@@ -1,0 +1,28 @@
+.keyButton {
+  min-width: 2.5rem;
+  height: 3.5rem;
+  padding: 0 0.65rem;
+
+  color: var(--color-text);
+  background-color: var(--color-keyboard);
+  border: 0;
+  border-radius: var(--radius-medium);
+
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.keyButton:hover {
+  background-color: var(--color-accent-hover);
+  transform: translateY(-2px);
+}
+
+.keyButton:focus-visible {
+  outline: 3px solid var(--color-text);
+  outline-offset: 3px;
+}
