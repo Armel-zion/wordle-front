@@ -1,17 +1,20 @@
+import { useEffect, useState } from "react";
 import Section from "../Section/Section";
 import Grid from "../Grid/Grid";
-import Keyboard from "../Keyboard/Keyboard";
+import KeyBoard from "../Keyboard/Keyboard";
 import Message from "../Message/Message";
 import mainStyles from "./Main.module.css";
-import { useEffect, useState } from "react";
-
 
 type Attempt = string[];
-type LetterState = "correct" | "present" | "absent" | "";
+export type LetterState = "correct" | "present" | "absent" | "";
+
+interface WordResponse {
+  word: string;
+  language: string;
+  date: string;
+}
 
 const emptyAttempt: Attempt = ["", "", "", "", ""];
-const acceptedWords = ["REACT", "AMOUR", "AVION", "CHIEN"];
-const wordToFind = "AMOUR";
 
 const Main = () => {
   const [attempts, setAttempts] = useState<Attempt[]>([
@@ -24,15 +27,52 @@ const Main = () => {
   ]);
 
   const [currentRow, setCurrentRow] = useState(0);
+
   const [letterStates, setLetterStates] = useState<LetterState[][]>([
-  ["", "", "", "", ""],
-  ["", "", "", "", ""],
-  ["", "", "", "", ""],
-  ["", "", "", "", ""],
-  ["", "", "", "", ""],
-  ["", "", "", "", ""],
-]);
+    [...emptyAttempt],
+    [...emptyAttempt],
+    [...emptyAttempt],
+    [...emptyAttempt],
+    [...emptyAttempt],
+    [...emptyAttempt],
+  ]);
+
+  const [keyStates, setKeyStates] = useState<
+    Record<string, LetterState>
+  >({});
+
+  const [wordToFind, setWordToFind] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const getWord = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/word?lang=fr`,
+          {
+            headers: {
+              "x-api-key": import.meta.env.VITE_API_KEY,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Impossible de récupérer le mot.");
+        }
+
+        const data: WordResponse = await response.json();
+
+        setWordToFind(data.word.toUpperCase());
+      } catch {
+        setMessage("Erreur : le mot du jour n'a pas pu être chargé.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    getWord();
+  }, []);
 
   const showMessage = (text: string) => {
     setMessage(text);
@@ -43,48 +83,98 @@ const Main = () => {
   };
 
   const checkAttempt = (attempt: Attempt): LetterState[] => {
-    return attempt.map((letter, index) => {
+    const states: LetterState[] = ["", "", "", "", ""];
+    const remainingLetters = wordToFind.split("");
+
+    // 1. Les lettres correctes : même lettre, même position.
+    attempt.forEach((letter, index) => {
       if (letter === wordToFind[index]) {
-        return "correct";
+        states[index] = "correct";
+        remainingLetters[index] = "";
+      }
+    });
+
+    // 2. Les lettres présentes et absentes.
+    attempt.forEach((letter, index) => {
+      if (states[index] === "correct") {
+        return;
       }
 
-      if (wordToFind.includes(letter)) {
-        return "present";
-      }
+      const availableIndex = remainingLetters.indexOf(letter);
 
-      return "absent";
+      if (availableIndex !== -1) {
+        states[index] = "present";
+        remainingLetters[availableIndex] = "";
+      } else {
+        states[index] = "absent";
+      }
+    });
+
+    return states;
+  };
+
+  const updateKeyboardStates = (
+    attempt: Attempt,
+    states: LetterState[]
+  ) => {
+    setKeyStates((previousKeyStates) => {
+      const nextKeyStates = { ...previousKeyStates };
+
+      attempt.forEach((letter, index) => {
+        const newState = states[index];
+        const oldState = nextKeyStates[letter];
+
+        // Vert est la couleur la plus importante.
+        if (newState === "correct") {
+          nextKeyStates[letter] = "correct";
+        } else if (
+          newState === "present" &&
+          oldState !== "correct"
+        ) {
+          nextKeyStates[letter] = "present";
+        } else if (
+          newState === "absent" &&
+          oldState === undefined
+        ) {
+          nextKeyStates[letter] = "absent";
+        }
+      });
+
+      return nextKeyStates;
     });
   };
 
- const handleEnter = () => {
-  const currentAttempt = attempts[currentRow];
-  const currentWord = currentAttempt.join("");
+  const handleEnter = () => {
+    const currentAttempt = attempts[currentRow];
+    const currentWord = currentAttempt.join("");
 
-  if (currentWord.length < 5) {
-    showMessage("Le mot doit contenir 5 lettres.");
-    return;
-  }
+    if (currentWord.length < 5) {
+      showMessage("Le mot doit contenir 5 lettres.");
+      return;
+    }
 
-  if (!acceptedWords.includes(currentWord)) {
-    showMessage("Ce mot n'est pas dans la liste.");
-    return;
-  }
+    const currentStates = checkAttempt(currentAttempt);
 
-  const currentStates = checkAttempt(currentAttempt);
+    setLetterStates((previousLetterStates) => {
+      const nextLetterStates = [...previousLetterStates];
+      nextLetterStates[currentRow] = currentStates;
+      return nextLetterStates;
+    });
 
-  const nextLetterStates = [...letterStates];
-  nextLetterStates[currentRow] = currentStates;
+    updateKeyboardStates(currentAttempt, currentStates);
 
-  setLetterStates(nextLetterStates);
+    if (currentWord === wordToFind) {
+      showMessage("Bravo, vous avez trouvé le mot !");
+      return;
+    }
 
-  if (currentRow === 5) {
-    showMessage("La partie est terminée.");
-    return;
-  }
+    if (currentRow === 5) {
+      showMessage(`La partie est terminée. Le mot était ${wordToFind}.`);
+      return;
+    }
 
-  setCurrentRow(currentRow + 1);
-  setMessage("");
-};
+    setCurrentRow((previousRow) => previousRow + 1);
+  };
 
   const handleDelete = () => {
     const currentAttempt = attempts[currentRow];
@@ -94,10 +184,12 @@ const Main = () => {
       if (nextAttempt[index] !== "") {
         nextAttempt[index] = "";
 
-        const nextAttempts = [...attempts];
-        nextAttempts[currentRow] = nextAttempt;
+        setAttempts((previousAttempts) => {
+          const nextAttempts = [...previousAttempts];
+          nextAttempts[currentRow] = nextAttempt;
+          return nextAttempts;
+        });
 
-        setAttempts(nextAttempts);
         setMessage("");
         return;
       }
@@ -105,12 +197,12 @@ const Main = () => {
   };
 
   const handleKeyClick = (letter: string) => {
-    if (letter === "Entrer") {
+    if (letter === "ENTRER") {
       handleEnter();
       return;
     }
 
-    if (letter === "Suppr") {
+    if (letter === "SUPPR") {
       handleDelete();
       return;
     }
@@ -122,29 +214,43 @@ const Main = () => {
       return;
     }
 
-    const nextAttempts = [...attempts];
-    const nextAttempt = [...currentAttempt];
+    setAttempts((previousAttempts) => {
+      const nextAttempts = [...previousAttempts];
+      const nextAttempt = [...previousAttempts[currentRow]];
 
-    nextAttempt[emptyIndex] = letter;
-    nextAttempts[currentRow] = nextAttempt;
+      nextAttempt[emptyIndex] = letter;
+      nextAttempts[currentRow] = nextAttempt;
 
-    setAttempts(nextAttempts);
+      return nextAttempts;
+    });
+
     setMessage("");
   };
+
+  if (isLoading) {
+    return (
+      <main className={mainStyles.main}>
+        <p>Chargement du mot du jour...</p>
+      </main>
+    );
+  }
 
   return (
     <main className={mainStyles.main}>
       {message ? <Message text={message} /> : null}
 
       <Section className={mainStyles.sectionGrid}>
-          <Grid
-            attempts={attempts}
-            letterStates={letterStates}
-          />
+        <Grid
+          attempts={attempts}
+          letterStates={letterStates}
+        />
       </Section>
 
       <Section className={mainStyles.sectionKeyboard}>
-        <Keyboard onClick={handleKeyClick}/>
+        <KeyBoard
+          onLetterClick={handleKeyClick}
+          keyStates={keyStates}
+        />
       </Section>
     </main>
   );

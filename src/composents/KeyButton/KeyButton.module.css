@@ -26,3 +26,21 @@
   outline: 3px solid var(--color-text);
   outline-offset: 3px;
 }
+
+.correct {
+  background-color: #538d4e;
+  border-color: #538d4e;
+  color: white;
+}
+
+.present {
+  background-color: #b59f3b;
+  border-color: #b59f3b;
+  color: white;
+}
+
+.absent {
+  background-color: #3a3a3c;
+  border-color: #3a3a3c;
+  color: white;
+}
